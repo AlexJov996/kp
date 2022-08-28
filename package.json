@@ -1,0 +1,21 @@
+{
+  "name": "KP",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./kp",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "await-to-js": "^2.1.1",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "parse-error": "^0.2.0",
+    "play-sound": "^1.1.5",
+    "puppeteer": "^9.1.1",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-adblocker": "^2.13.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.0"
+  }
+}
