@@ -9,13 +9,13 @@ const publishProductFlow = async function (page) {
     for (let i = 0; i < products.length; i++) {
         const product = products[i];
         try {
-            console.log(`Started product (${i} / ${products.length})`, product.title);
+            console.log(`Started product (${i+1} / ${products.length})`, product.title);
             await startNewProductWizard(page);
             await firstStepOfWizzard(page, product);
             await secondStepOfWizzard(page, product);
             await thirdStepOfWizzard(page);
             await lastStepOfWizzard(page);
-            console.log(`Finished product (${i} / ${products.length})`, product.title);
+            console.log(`Finished product (${i+1} / ${products.length})`, product.title);
 
         } catch (e) {
             player.play('alarm.mp3', function(err){
@@ -39,10 +39,10 @@ const loginToKP = async function (page) {
     let passwordInput = await page.$('#password');
     if (emailInput && passwordInput) {
         console.log('Login page..');
-        // await page.type('#email', 'marina.nikolic1995@yahoo.com',{ delay: 100 });
-        // await page.type('#password', 'sasauto1996',{ delay: 100 });
-        await page.$eval('#email', el => el.value = 'sale.tkd.lesa@gmail.com');
-        await page.$eval('#password', el => el.value = 'Lesa159753');
+        await page.type('#email', 'marina.nikolic1995@yahoo.com',{ delay: 100 });
+        await page.type('#password', 'sasauto1996',{ delay: 100 });
+        // await page.$eval('#email', el => el.value = 'sale.tkd.lesa@gmail.com');
+        // await page.$eval('#password', el => el.value = 'Lesa159753');
 
         await page.click('#submitButton');
         await page.waitForTimeout(2000);

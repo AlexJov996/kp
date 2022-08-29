@@ -24,8 +24,8 @@ puppeteer.launch({ headless: false }).then(async browser => {
     await page.setViewport({ width: 800, height: 600 });
 
 
-    // await userActions.start(page);
-    await userActions.removeProducts(page);
+    await userActions.start(page);
+    // await userActions.removeProducts(page);
     // await productPull.loadProductList(page);
     console.log(`All done ✨`);
     await browser.close();
