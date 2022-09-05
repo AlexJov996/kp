@@ -1,4 +1,5 @@
 const fs = require('fs');
+const userAction = require('./userActions');
 
 const baseUrl = `https://www.kupujemprodajem.com`;
 const marinaUrls = [ '/kupatilo-i-oprema/kupatilski-namestaj/ormaric-za-kupatilo/oglas/140858295',
@@ -134,13 +135,31 @@ const pullImages = async function (page, product, num) {
     let images = [];
     if (product.images.length === 0) console.error("NO IMAGES IN PRODUCT",product.title)
     for (let i = 0; i < product.images.length; i++) {
+        if (!product.images[i].includes('//')) continue;
         let viewSource = await page.goto("https:" + product.images[i]);
         await page.waitForTimeout(2000);
 
+        console.log("https:" + product.images[i]);
         fs.writeFileSync(`images/${imageName}${i}.jpg`, await viewSource.buffer());
+        console.log("saved");
         images.push(`${imageName}${i}.jpg`);
     }
     product.imagesUrls = images;
     if (images.length === 0) console.error("NO IMAGES",product.title);
     return product;
 };
+
+const pullImagesFromObj = async function (page) {
+    let products = await userAction.readData();
+    let num = 1111;
+
+    for (let i = 0; i < products.length; i++) {
+        let product = products[i];
+
+        console.log(`Procesing (${i}/${products.length}) with ${product.images.length} images`,num);
+        product = await pullImages(page, product, num );
+        num++;
+    }
+
+};
+exports.pullImagesFromObj = pullImagesFromObj;

@@ -174,6 +174,7 @@ const readData = function () {
     dataFile = JSON.parse(dataFile);
     return dataFile;
 };
+exports.readData = readData;
 
 const removeProducts = async function (page) {
 
