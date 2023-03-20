@@ -2,70 +2,72 @@ const fs = require('fs');
 const userAction = require('./userActions');
 
 const baseUrl = `https://www.kupujemprodajem.com`;
-const marinaUrls = [ '/kupatilo-i-oprema/kupatilski-namestaj/ormaric-za-kupatilo/oglas/140858295',
-    '/foto-aparati-i-kamere/rasveta-blicevi-blic-glave-i-led/ring-light-12-led-prsten-svetlo/oglas/140754898',
-    '/elektronika-i-komponente/video-nadzor/spoljna-ip-wifi-kamera-ptz-8mp/oglas/140754817',
-    '/alati-i-orudja/elektricni-aku-alati/de-walt-srafilica-24v/oglas/140754660',
-    '/alati-i-orudja/elektricne-busilice/elektricna-busilica-bosch-800w/oglas/140754619',
-    '/alati-i-orudja/elektricni-aku-alati/de-walt-strafilica-36v-sa-nastavcima/oglas/140754569',
-    '/alati-i-orudja/elektricni-aku-alati/makita-aku-srafilica-busilica-24v-pribor-2-baterije/oglas/140754527',
-    '/alati-i-orudja/elektricni-aku-alati/aku-srafilica-i-busilica-makita-12v-sa-nastavcima-2-baterije/oglas/140754476',
-    '/alati-i-orudja/elektricni-aku-alati/aku-Srafilica-busilica-bosch-26v-sa-nastavcima/oglas/140754425',
-    '/alati-i-orudja/elektricni-aku-alati/makita-udarna-busilica-710w/oglas/140754380',
-    '/alati-i-orudja/elektricne-brusilice/ceona-brusilica-bijaks-sa-priborom-makita/oglas/140754332',
-    '/elektronika-i-komponente/video-nadzor/ip-camera-720-hd-sa-tri-antene/oglas/140754288',
-    '/elektronika-i-komponente/video-nadzor/spoljna-ip-kamera-fullhd-wifi-3mpx/oglas/140754223',
-    '/kompjuteri-desktop/3d-stampaci/wifi-repiter-pojacivac-signala-za-internet/oglas/140754144',
-    '/nega-lica-tela-i-ulepsavanje/oprema-za-masazu/masazer-za-telo/oglas/140754060',
-    '/nega-lica-tela-i-ulepsavanje/oprema-za-masazu/pistolj-masazer/oglas/140753962',
-    '/motocikli-oprema-i-delovi/agregati/cerada-za-motor/oglas/140753864',
-    '/automobili-oprema/alarmni-sistemi/univerzalana-multimedia-7-inca-gps-android/oglas/140753833',
-    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/vodootporna-radio-stanica-toki-voki-baofeng-uv-9r-15w/oglas/140753777',
-    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/dve-radio-stanice-baofeng-888s/oglas/140753696',
-    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/vodootporna-radio-stanica-toki-voki-baofeng-uv-9r-10w/oglas/140753641',
-    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/radio-stanica-baofeng-uv6r-snaga-7w/oglas/140753568',
-    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/toki-voki-baofeng-uv-5r-dual-band-8w/oglas/140753513',
-    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/baofeng-dual-band-radio-stanica-uv82/oglas/140753413',
-    '/tv-i-video/smart-tv-box/smart-tv-box-t95/oglas/140750570',
-    '/elektronika-i-komponente/video-nadzor/ip-spoljna-vodootporna-kamera-4g/oglas/140750484',
-    '/automobili-oprema/sijalice-led-diode-i-trake/led-traka-za-unutrasnjost-auta/oglas/140750440',
-    '/elektronika-i-komponente/video-nadzor/kamere-za-nadzor-set-od-4-kamere/oglas/140750355',
-    '/tv-i-video/smart-tv-box/q-smart-tv-box/oglas/140750284',
-    '/elektronika-i-komponente/interfoni/wifi-smart-kucno-zvono-sa-kamerom/oglas/140750189',
-    '/bela-tehnika-i-kucni-aparati/kuhinjski-bojleri-i-slavine-sa-grejacem/protocni-termostaticni-bojler-delimano/oglas/140750115',
-    '/alati-i-orudja/za-merenje/lasersi-metar-daljinometar/oglas/140750024',
-    '/lov-i-ribolov/lov-optika-i-kamere/hc-700m-vildlife-camera-16mp/oglas/140749952',
-    '/lov-i-ribolov/lov-optika-i-kamere/kamera-za-lov-hc-300m/oglas/140749802',
-    '/lov-i-ribolov/lov-optika-i-kamere/lovacka-kamera-suntek-hc-801a/oglas/140749681',
-    '/muzika-i-instrumenti/mikrofoni/mikrofon-shure-sm-beta-58a/oglas/140749548',
-    '/muzika-i-instrumenti/mikrofoni/studijski-mikrofon-bm800/oglas/140749488',
-    '/muzika-i-instrumenti/prof-studijska-oprema/refleksioni-filter/oglas/140749431',
-    '/automobili-oprema/radio-cd-dvd-za-auto-delovi/led-diode-za-auto/oglas/140749381',
-    '/lov-i-ribolov/lov-lampe/lampa-za-glavu-sa-8-dioda/oglas/140749343',
-    '/automobili-oprema/radio-cd-dvd-za-auto-delovi/radio-za-automobil/oglas/140749268',
-    '/muzika-i-instrumenti/mikrofoni/studijski-mikrofon-bm800-sa-miksetom/oglas/140749183',
-    '/muzika-i-instrumenti/ozvucenja-miksete/v8-live-sound-card-mikseta/oglas/140749115',
-    '/sport-i-razonoda/dvogledi-durbini-i-teleskopi/binculars-mini-dvogled/oglas/140749049',
-    '/lov-i-ribolov/lov-lampe/lampa-za-pusku-sa-dve-i-sa-tri-baterije/oglas/140749003',
-    '/muzika-i-instrumenti/mikrofoni/mikrofon-shure-sm58/oglas/140748939',
-    '/automobili-oprema/alarmni-sistemi/elektricna-pumpa-za-gorivo/oglas/140748898',
-    '/automobili-oprema/alarmni-sistemi/multimedija-univerzalna-10-inca/oglas/140748859',
-    '/mobilni-tel-oprema-i-delovi/acer-oprema-i-delovi/uvelicavajuci-ekran-za-mobilni-telefon/oglas/140748790',
-    '/lov-i-ribolov/lov-optika-i-kamere/lovacka-kamera-huntcam-hc-801m/oglas/140748688',
-    '/lov-i-ribolov/lov-optika-i-kamere/kamera-za-lov-ht-001/oglas/140748500',
-    '/mama-i-beba/zastita-i-nadzor-beba/bebi-monitor-kamera-vb602/oglas/140748422',
-    '/bela-tehnika-i-kucni-aparati/kuhinjski-bojleri-i-slavine-sa-grejacem/delimano-slavina-i-protocni-bojler-2-u-1/oglas/140748339',
-    '/mama-i-beba/zastita-i-nadzor-beba/bebi-monitor-kamera-vb601/oglas/140748253',
-    '/lov-i-ribolov/lov-optika-i-kamere/bushnell-opticki-nisan-3-9x40-eg/oglas/140748201',
-    '/bela-tehnika-i-kucni-aparati/kuhinjski-bojleri-i-slavine-sa-grejacem/delimano-slavina-i-protocni-bojler-2-u-1/oglas/140748146',
-    '/elektro-i-rasveta/rasveta/solarne-lampe-za-dvoriste-6-komada/oglas/140748077',
-    '/elektro-i-rasveta/led-rasveta/led-traka-10-m/oglas/140748028',
-    '/poljoprivreda/vodosnabdevanje-i-navodnjavanje/pumpa-za-vodu-0-55-kw/oglas/140747991',
-    '/poljoprivreda/vodosnabdevanje-i-navodnjavanje/pumpa-za-vodu/oglas/140747958',
-    '/poljoprivreda/vodosnabdevanje-i-navodnjavanje/pumpa-za-vodu-1-5kw/oglas/140747932',
-    '/elektronika-i-komponente/lemilice-i-oprema/pistolj-lemilica-za-varenje-plastike-i-plasticnih-delova/oglas/140747908',
-    '/automobili-oprema/alarmni-sistemi/presvlake-za-auto-sedista/oglas/140747837',
-    '/alati-i-orudja/elektricne-brusilice/bosh-brusilica-1000w/oglas/140747802' ];
+const marinaUrls = [
+  '/automobili-oprema/sijalice-led-diode-i-trake/led-diode-za-auto/oglas/148897608?filterId=2699886876',
+    '/automobili-oprema/sijalice-led-diode-i-trake/led-traka-za-unutrasnjost-auta/oglas/148897587?filterId=2699886876',
+    '/muzika-i-instrumenti/mikrofoni/mikrofon-shure-sm58/oglas/148897572?filterId=2699886876',
+    '/motocikli-oprema-i-delovi/obezbedjenje-motocikala/cerada-za-motor/oglas/148897557?filterId=2699886876',
+    '/automobili-oprema/multimedije-za-auto/multimedija-univerzalna-10-inca-gps-android/oglas/148897533?filterId=2699886876',
+    '/lov-i-ribolov/lov-optika-i-kamere/bushnell-opticki-nisan-3-9x40-eg/oglas/148897519?filterId=2699886876',
+    '/tv-i-video/smart-tv-box/q-smart-tv-box/oglas/148897501?filterId=2699886876',
+    '/mobilni-tel-oprema-i-delovi/razna-oprema/uvelicavajuci-ekran-za-mobilni-telefon/oglas/148897491?filterId=2699886876',
+    '/lov-i-ribolov/lov-lampe/lampa-za-pusku-sa-dve-i-sa-tri-baterije/oglas/148897472?filterId=2699886876',
+    '/lov-i-ribolov/lov-optika-i-kamere/binculars-mini-dvogled/oglas/148897456?filterId=2699886876',
+    '/lov-i-ribolov/lov-lampe/lampa-za-glavu-sa-8-dioda/oglas/148897441?filterId=2699886876',
+    '/alati-i-orudja/elektricne-brusilice/nova-elektricna-brusilica-bosch/oglas/148897416?filterId=2699886876',
+    '/elektronika-i-komponente/lemilice-i-oprema/pistolj-lemilica-za-varenje-plastike-i-plasticnih-delova/oglas/148897404?filterId=2699886876',
+    '/alati-i-orudja/elektricne-brusilice/ceona-brusilica-bijaks-sa-priborom-makita/oglas/148897387?filterId=2699886876',
+    '/alati-i-orudja/elektricni-aku-alati/makita-udarna-busilica-710w/oglas/148897376?filterId=2699886876',
+    '/alati-i-orudja/elektricni-aku-alati/aku-srafilica-busilica-bosch-26v-sa-nastavcima/oglas/148897364?filterId=2699886876',
+    '/alati-i-orudja/elektricni-aku-alati/aku-srafilica-i-busilica-makita-12v-sa-nastavcima/oglas/148897348?filterId=2699886876',
+    '/elektronika-i-komponente/video-nadzor/wifi-smart-kucno-zvono-sa-kamerom/oglas/148897332?filterId=2699886876',
+    '/elektronika-i-komponente/video-nadzor/kamere-za-video-nadzor/oglas/148897319?filterId=2699886876',
+    '/elektronika-i-komponente/video-nadzor/spoljna-ip-wifi-kamera-ptz-8mp-10x-zoom/oglas/148897300?filterId=2699886876',
+    '/elektronika-i-komponente/video-nadzor/ip-camera-720-hd-sa-tri-antene/oglas/148897288?filterId=2699886876',
+    '/elektronika-i-komponente/video-nadzor/spoljna-ip-kamera-ip66-fullhd-wifi-3mpx/oglas/148897273?filterId=2699886876',
+    '/automobili-oprema/radio-cd-i-dvd-za-auto/radio-za-auto-sa-bluetooth-poovezivanjem/oglas/148897256?filterId=2699886876',
+    '/elektro-i-rasveta/led-rasveta/led-traka-10-m/oglas/148897242?filterId=2699886876',
+    '/tv-i-video/delovi-i-oprema/drzac-za-tv-zglobni/oglas/148897221?filterId=2699886876',
+    '/automobili-oprema/obavezna-oprema/prva-pomoc-set/oglas/148897179?filterId=2699886876',
+    '/fitnes-i-vezbanje/steznici-pojasevi-stitnici-i-rukavice/pametnj-pojas-za-ledja/oglas/147644766?filterId=2699886876',
+    '/alati-i-orudja/elektricne-brusilice/makita-aku-brusilica-sa-potenciometrom-2000w-128v/oglas/147644714?filterId=2699886876',
+    '/alati-i-orudja/elektricni-aku-alati/makita-udarni-odvijac-128v/oglas/147644653?filterId=2699886876',
+    '/lov-i-ribolov/lov-lampe/lampa-za-pusku-bailong/oglas/147644619?filterId=2699886876',
+    '/muzika-i-instrumenti/mikrofoni-oprema-i-delovi/stalak-za-mikrofon/oglas/147644576?filterId=2699901471',
+    '/elektro-i-rasveta/led-rasveta/ring-svelto-ring-ligh-velicine-12inch-30cm/oglas/147644530?filterId=2699901471',
+    '/foto-aparati-i-kamere/rasveta-blicevi-blic-glave-i-led/ring-light-sa-stalkom/oglas/147643945?filterId=2699901471',
+    '/alati-i-orudja/elektricne-testere-i-cirkulari/aku-testera-rucna-stihl-36v-550w/oglas/147643867?filterId=2699901471',
+    '/alati-i-orudja/elektricni-aku-alati/dewalt-udarni-odvijac-128v/oglas/147643807?filterId=2699901471',
+    '/alati-i-orudja/elektricni-aku-alati/makita-aku-srafilica-busilica-cekic-128v-pribor-2-baterije/oglas/147643749?filterId=2699901471',
+    '/alati-i-orudja/elektricni-aku-alati/makita-aku-srafilica-brusilica-48v-sa-nastavcima/oglas/147643672?filterId=2699901471',
+    '/alati-i-orudja/stolarski/frezeri-glodala-za-drvo/oglas/147643601?filterId=2699901471',
+    '/alati-i-orudja/za-merenje/laserski-nivelator-lfine-llks-serije-4v1h1d/oglas/147643333?filterId=2699901471',
+    '/alati-i-orudja/za-merenje/nivelator-llx-360-01-12liniski-3d/oglas/147643058?filterId=2699901471',
+    '/sport-i-razonoda/dronovi/dron-a17s-wifi-hd-dual-kamera/oglas/147642879?filterId=2699901471',
+    '/automobili-oprema/lanci-za-sneg/lanci-za-sneg/oglas/147642815?filterId=2699901471',
+    '/alati-i-orudja/elektricne-busilice/elektricna-busilica-bosch-800w/oglas/147642751?filterId=2699901471',
+    '/alati-i-orudja/elektricni-aku-alati/de-walt-srafilica-24v/oglas/147642691?filterId=2699901471',
+    '/muzika-i-instrumenti/mikrofoni/mikrofon-shure-sm-beta-58a/oglas/147642598?filterId=2699901471',
+    '/muzika-i-instrumenti/mikrofoni/studijski-mikrofon-bm800/oglas/147642505?filterId=2699901471',
+    '/muzika-i-instrumenti/prof-studijska-oprema/refleksioni-filter/oglas/147642408?filterId=2699901471',
+    '/muzika-i-instrumenti/ozvucenja-miksete/studijski-mikrofon-bm800-sa-miksetom/oglas/147642350?filterId=2699901471',
+    '/muzika-i-instrumenti/ozvucenja-miksete/v8-live-sound-card-mikseta/oglas/147642279?filterId=2699901471',
+    '/elektronika-i-komponente/moduli-za-samoizgradnju/radio-stanica-model-baofeng-bflf-918uv/oglas/147642197?filterId=2699901471',
+    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/vodootporna-radio-stanica-toki-voki-baofeng-uv-9r-15w/oglas/147642078?filterId=2699901471',
+    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/vodootporna-radio-stanica-toki-voki-baofeng-uv-9r-10w/oglas/147642020?filterId=2699901471',
+    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/radio-stanica-baofeng-uv6r-snaga-7w/oglas/147641969?filterId=2699901471',
+    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/toki-voki-baofeng-uv-5r-dual-band-8w/oglas/147623124?filterId=2699901471',
+    '/elektronika-i-komponente/radio-primopredajnici-i-oprema/baofeng-dual-band-radio-stanica-uv82-8w/oglas/147623063?filterId=2699901471',
+    '/bela-tehnika-i-kucni-aparati/kuhinjski-bojleri-i-slavine-sa-grejacem/delimano-slavina-i-protocni-bojler-2-u-1/oglas/147622982?filterId=2699901471',
+    '/bela-tehnika-i-kucni-aparati/kuhinjski-bojleri-i-slavine-sa-grejacem/delimano-slavina-i-protocni-bojler-2-u-1/oglas/147622910?filterId=2699901471',
+    '/bela-tehnika-i-kucni-aparati/kuhinjski-bojleri-i-slavine-sa-grejacem/protocni-termostaticni-bojler-delimano/oglas/147622826?filterId=2699901471',
+    '/elektronika-i-komponente/video-nadzor/spoljna-vodootporna-ip-wifi-kamera-8mp-a15-icsee/oglas/147622694?filterId=2699901471',
+    '/alati-i-orudja/za-merenje/laserski-metar-daljinometar/oglas/147622606?filterId=2699901471',
+    '/nega-lica-tela-i-ulepsavanje/oprema-za-masazu/pistolj-za-masazu/oglas/147622532?filterId=2699889207',
+    '/nega-lica-tela-i-ulepsavanje/oprema-za-masazu/masazer-za-telo/oglas/147622464?filterId=2699889207',
+    '/kompjuteri-desktop/mrezni-uredjaji/wifi-repiter-pojacivac-signala-za-internet/oglas/147622391?filterId=2699889207',
+    '/automobili-oprema/patosnice-presvlake-i-tapacirung/univerzalane-presvlake-za-auto-sedista/oglas/147622237?filterId=2699889207',
+    '/automobili-oprema/ostalo/elektricna-pumpa-sluzi-za-pretakanje-goriva/oglas/147622157?filterId=2699889207' ];
 
 const loadProductList = async function (page) {
     // let urls = [
@@ -78,24 +80,24 @@ const loadProductList = async function (page) {
     // for (const url of urls) {
     //     await page.goto(url);
     //
-    //     await page.waitForSelector('#adListContainer');
+    //     await page.waitForSelector('#__next');
     //     await page.waitFor(5000);
     //
-    //     let ads = await page.$$eval('a.adName', a => {
+    //     let ads = await page.$$eval('article.AdItem_adHolder__NoNLJ > a.Link_link__J4Qd8', a => {
     //         return a.map(a=>a.getAttribute('href'));
     //     });
     //     links = links.concat(ads);
     // }
     //
-    // console.log(links);
-    let imageName = 1111;
-    for (const marinaUrl of marinaUrls) {
-        let product = await scrapePage(page,`${baseUrl}${marinaUrl}`);
-        product = await pullImages(page, product, imageName);
-        console.log("Finished product...", product.title);
-        imageName++;
-        await writeToFile(product);
-    }
+    // console.log(links.toString());
+    // let imageName = 1111;
+    // for (const marinaUrl of marinaUrls) {
+    //     let product = await scrapePage(page,`${baseUrl}${marinaUrl}`);
+    //     product = await pullImages(page, product, imageName);
+    //     console.log("Finished product...", product.title);
+    //     imageName++;
+    //     await writeToFile(product);
+    // }
 };
 exports.loadProductList = loadProductList;
 
@@ -103,19 +105,19 @@ const scrapePage = async function (page, url) {
     await page.goto(url);
     await page.waitFor(5000);
 
-    const priceText = await page.$eval('h2.price-holder',el => el.innerHTML);
-    const title = await page.$eval('h1.oglas-title',el => el.innerHTML);
-    const imageUrls = await page.$$eval('#thumbsList > a', el => {
-        return el.map(e => e.getAttribute('href'));
+    const priceText = await page.$eval('h2.AdViewInfo_price__RLvIy',el => el.innerHTML);
+    const title = await page.$eval('h1.AdViewInfo_name__ShcRk',el => el.innerHTML);
+    const imageUrls = await page.$$eval('img.GallerySlideItem_imageGalleryImage__2eGga', el => {
+        return el.map(e => e.getAttribute('src'));
     })
 
     let product = {
         title: title,
-        category:  await page.$$eval('.breadcrumbs > .crumbs', el => {
+        category:  await page.$$eval('.BreadcrumbHolder_breadcrumb__KAsXr .Link_link__J4Qd8', el => {
             return el.map(e => e.innerHTML);
         }),
-        price: (priceText.split(' '))[1].replace("&nbsp;din","").replace('.',""),
-        description: await page.$eval('div.oglas-description',el => el.innerHTML),
+        price: (priceText.split(' '))[3].replace("&nbsp;din","").replace('.',"").replace('-->',''),
+        description: await page.$eval('.AdViewDescription_descriptionHolder__SUMWu p',el => el.innerHTML),
         images: imageUrls
     };
     product.descriptionV2 = product.description.replace(/<\/?[^>]+(>|$)/g, "");
@@ -136,7 +138,7 @@ const pullImages = async function (page, product, num) {
     if (product.images.length === 0) console.error("NO IMAGES IN PRODUCT",product.title)
     for (let i = 0; i < product.images.length; i++) {
         if (!product.images[i].includes('//')) continue;
-        let viewSource = await page.goto("https:" + product.images[i]);
+        let viewSource = await page.goto(product.images[i]);
         await page.waitForTimeout(2000);
 
         console.log("https:" + product.images[i]);

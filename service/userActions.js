@@ -1,5 +1,6 @@
 const fs = require("fs");
 const player = require('play-sound')(opts = {});
+const {User, Product} = require('../models');
 
 const publishProductFlow = async function (page) {
 
@@ -200,3 +201,38 @@ const removeProducts = async function (page) {
 
 };
 exports.removeProducts = removeProducts;
+
+exports.writeDataToDB = async function () {
+    const userObj = {
+        fullName: 'Aleksandar Jovanovic',
+        email: 'sale.tkd.lesa@gmail.com',
+        password: 'Lesa159753'
+    };
+
+    let user;
+
+    user = await User.findOne({ where: {email: userObj.email}}).catch(e => {console.error('GET error', e)});
+
+    if (!user) {
+        user = await User.create(userObj).catch(e => {console.error('CREATE user error', e)});
+    }
+
+    const products = await readData();
+
+    for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        try {
+            console.log(`Started product (${i+1} / ${products.length})`, product.title);
+            let productCreated = await Product.create(product).catch(e => {console.error('CREATE post error', e)});
+            console.log(`Finished product (${i+1} / ${products.length})`, product.title);
+
+        } catch (e) {
+            // player.play('alarm.mp3', function(err){
+            //     if (err) throw err;
+            // })
+            throw e;
+        }
+
+    }
+
+}
