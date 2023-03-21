@@ -32,6 +32,7 @@ appEvent.on('dbConnected', function (){
 
 
         await userActions.start(page);
+        // await userActions.writeDataToDB(page);
         // await userActions.removeProducts(page);
         // await productPull.loadProductList(page);
         // await productPull.pullImagesFromObj(page);

@@ -1,18 +1,18 @@
 'use strict';
 let dotEnvOptions = {};
-dotEnvOptions.path = '../.env';
+dotEnvOptions.path = './.env';
 require('dotenv').config(dotEnvOptions); // instantiate environment variables
 
 let CONFIG = {
-  db_host : 'database-1.c1m0xktnx5ai.eu-central-1.rds.amazonaws.com',
-  db_dialect : 'mysql',
-  db_port : 3306,
+  db_host : process.env.DB_HOST,
+  db_dialect : process.env.DB_DIALOG,
+  db_port : process.env.DB_PORT,
   sequelizeLogEnabled : false,
-  db_name : 'kupujemprodajem',
-  db_user : 'root',
-  db_password : 'Sasmarince1996'
+  db_name : process.env.DB_NAME,
+  db_user : process.env.DB_USER,
+  db_password : process.env.DB_PASSWORD
 
 };
-
+console.log(CONFIG)
 module.exports = CONFIG;
 

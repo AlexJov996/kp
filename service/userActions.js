@@ -4,18 +4,18 @@ const {User, Product} = require('../models');
 
 const publishProductFlow = async function (page) {
 
-    await loginToKP(page);
-    const products = await readData();
+    const user = await loginToKP(page,'sale.tkd.lesa@gmail.com');
+    const products = await Product.findAll({ where: { userId: user.id }}).catch(e => console.error('GET ALL products', e));
 
-    for (let i = 0; i < products.length; i++) {
+    for (let i = 0; i < 1; i++) {
         const product = products[i];
         try {
             console.log(`Started product (${i+1} / ${products.length})`, product.title);
             await startNewProductWizard(page);
             await firstStepOfWizzard(page, product);
             await secondStepOfWizzard(page, product);
-            await thirdStepOfWizzard(page);
-            await lastStepOfWizzard(page);
+            // await thirdStepOfWizzard(page);
+            // await lastStepOfWizzard(page);
             console.log(`Finished product (${i+1} / ${products.length})`, product.title);
 
         } catch (e) {
@@ -30,27 +30,29 @@ const publishProductFlow = async function (page) {
 };
 exports.start = publishProductFlow;
 
-const loginToKP = async function (page) {
+const loginToKP = async function (page, email) {
     console.log(`Open KP login..`);
+    const user = await User.findOne({ where: { email: email }}).catch(e => console.error('USER get', e));
+    if (!user) return false;
 
-    await page.goto('https://www.kupujemprodajem.com/login');
+    await page.goto('https://novi.kupujemprodajem.com/login');
     await page.waitForTimeout(2000);
 
     let emailInput = await page.$('#email');
     let passwordInput = await page.$('#password');
     if (emailInput && passwordInput) {
         console.log('Login page..');
-        await page.type('#email', 'marina.nikolic1995@yahoo.com',{ delay: 100 });
-        await page.type('#password', 'sasauto1996',{ delay: 100 });
-        // await page.$eval('#email', el => el.value = 'sale.tkd.lesa@gmail.com');
-        // await page.$eval('#password', el => el.value = 'Lesa159753');
+        await page.type('#email', user.email ,{ delay: 100 });
+        await page.type('#password', user.password ,{ delay: 100 });
+        // await page.type('#email', 'marina.nikolic1995@yahoo.com',{ delay: 100 });
+        //         await page.type('#password', 'sasauto1996',{ delay: 100 });
 
-        await page.click('#submitButton');
+        await page.click('button[type="submit"]');
         await page.waitForTimeout(2000);
     } else {
         console.log('Not login page..');
     }
-    return page;
+    return user;
 };
 exports.login = loginToKP;
 
@@ -63,12 +65,12 @@ const startNewProductWizard = async function (page) {
         await page.waitFor(5000);
     }
 
-    await page.click("a[href='/oglasi.php?action=new']");
+    await page.click("a[href='/postavljanje-oglasa']");
     await page.waitForTimeout(2000);
     const newUrl = await page.evaluate(() => document.location.href);
-    const isWizardPage = newUrl.includes('oglasi.php');
+    const isWizardPage = newUrl.includes('postavljanje-oglasa');
     if (!isWizardPage) {
-        page.goto('https://www.kupujemprodajem.com/oglasi.php?action=new');
+        page.goto('https://novi.kupujemprodajem.com/postavljanje-oglasa');
         await page.waitForTimeout(2000);
 
     }
@@ -84,37 +86,21 @@ const firstStepOfWizzard = async function (page, product) {
     const url = await page.evaluate(() => document.location.href);
     const isNewProductPage = url.includes('oglasi.php?action=new');
 
-    await page.type("input[id='data[group_suggest_text]']", product.title,{ delay: 100 });
+    await page.type("input[id='groupSuggestText']", product.title,{ delay: 100 });
     await page.waitForTimeout(2000);
-    await page.click("input[id='data[ad_kind]goods']");
+    await page.click("input[value='goods']");
     await page.waitForTimeout(2000);
-    if (product.category[0].includes('|')) {
-        let categorySections = product.category[0].split('|');
-        await page.type("div.uiMenuButtonSelectionHolder input.mg-field", categorySections[0],{ delay: 100 });
-        await page.waitForTimeout(2000);
 
-        await page.$eval(`div[data-text="${product.category[0]}"]`, el => el.click());
-        await page.waitForTimeout(2000);
-
-    } else {
-        await page.type("div.uiMenuButtonSelectionHolder input.mg-field", product.category[0],{ delay: 100 });
-
-    }
-    await page.keyboard.press('Enter');
+    await page.type('input[aria-describedby="react-select-categoryId-placeholder"]', product.category[0],{ delay: 100 });
     await page.waitForTimeout(2000);
-    if (product.category[1].includes('|')) {
-        let subCategorySections = product.category[1].split('|');
-        await page.type("#groupInsertSpot div.uiMenuButtonSelectionHolder input.mg-field", subCategorySections[0],{ delay: 100 });
-        await page.waitForTimeout(2000);
-        await page.$eval(`div[data-text="${product.category[1]}"]`, el => el.click());
-        await page.waitForTimeout(2000);
-    } else {
-        await page.type("#groupInsertSpot div.uiMenuButtonSelectionHolder input.mg-field", product.category[1],{ delay: 100 });
+    await page.$eval(`div[id="react-select-categoryId-option-0"]`, el => el.click());
+    await page.waitForTimeout(2000);
 
-    }
+    await page.keyboard.type( product.category[1],{ delay: 100 });
+
     await page.keyboard.press('Enter');
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(2000);
 
 };
 exports.firstStep = firstStepOfWizzard;
@@ -122,23 +108,37 @@ exports.firstStep = firstStepOfWizzard;
 const secondStepOfWizzard = async function (page, product) {
     console.log("Second step");
 
-    await page.click("input[id='data[condition]as-new']");
+    const [button] = await page.$x("//p[contains(., 'Kao novo')]");
+    console.log(1)
+    if (button) {
+        await button.click();
+        console.log(2)
 
-    await page.type("#price_number", product.price,{ delay: 100 });
-    await page.click("#currency_rsd");
+    }
+    if (!product.price) product.price = "1000";
+    await page.type("#price", product.price,{ delay: 100 });
+    console.log(3)
+
+    await page.click('input[value="rsd"]');
+    console.log(4)
+
     //POPRAVI ZA EUR
-
+    await page.waitForSelector("iframe[id='text-field-editor_ifr']");
     const elementHandle = await page.$(
-        "iframe[id='data[description]_ifr']",
+        "iframe[id='text-field-editor_ifr']",
     );
+    console.log(5)
+
     const frame = await elementHandle.contentFrame();
     // let text = 'Protočni termostatični bojler Delimano.  Delimano Bojler za kupatilo i kuhinju.  Različite vrste zaštite: zaštita od curenja, zaštita od suvog grejanja, izolacija električne energije, automatsko isključivanje u praznom hodu, automatsko isključivanje od pregrevanja.      -  Nema potrebe za skladištenjem vode, nema potrebe za grejanjem, uštedom energije i zaštitom životne sredine.      - Održavanje konstantne temperature na optimalnoj temperaturi vode za Vas.      - Malih dimenzija, ušteda energije i visoka efikasnost.      - Digitalni LCD prikaz temperature.      Napomena- Strogo zabranjeno stavljati ga sa strane / vodoravno / naopako.      - Prva instalacija mora biti voda, a zatim uključitiTermostaticki grejac vode-Snaga: 3500W-Voltaža : 220V~-Vodootpornost : IPx4-Pritisak : 0Pa-Servisni pritisak : 0.04-0,4mpa-Protok pročišćene vode iznosi : ( 8 L ) u Minuti-Primenjiva temperatura prečišćavanja vode : 5*C - 60*C-Primenjiva temperatura prečišćavanja vode : 5*C - 60*C-Ukupna neto zapremina vode : 50000 L';
+    console.log(6)
+    await frame.waitForSelector("#tinymce");
 
     await frame.type('#tinymce',product.description, { delay: 50 });
     // await frame.$eval('#tinymce', (el, product) => el.value = product.description, product);
+    console.log(7)
 
-    await page.waitForSelector("#upload_file");
-    const input = await page.$("#upload_file");
+    const input = await page.$("input[type='file']");
     for (const img of product.imagesUrls) {
         await input.uploadFile("./images/"+img);
     }
@@ -219,8 +219,10 @@ exports.writeDataToDB = async function () {
 
     const products = await readData();
 
+
     for (let i = 0; i < products.length; i++) {
         const product = products[i];
+        product.userId = user.id;
         try {
             console.log(`Started product (${i+1} / ${products.length})`, product.title);
             let productCreated = await Product.create(product).catch(e => {console.error('CREATE post error', e)});

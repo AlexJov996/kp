@@ -47,7 +47,7 @@ if (process.env.APP === 'test') {
         logging: false,
     });
 
-    sequelize.sync({force: true});
+    sequelize.sync();
 } else {
     sequelizeParams['logging'] = CONFIG.sequelizeLogEnabled ? console.log : false;
     // production / devel - real database
@@ -81,7 +81,7 @@ Object.keys(db).forEach(modelName => {
 });
 
 sequelize
-    .sync({force: true})
+    .authenticate()
     .then(() => {
         console.log(`MYSQL connected to ${sequelizeParams.host}:${sequelizeParams.port}`);
     })
